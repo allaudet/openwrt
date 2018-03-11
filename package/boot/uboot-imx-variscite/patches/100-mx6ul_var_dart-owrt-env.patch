@@ -1,0 +1,47 @@
+--- a/include/configs/mx6ul_var_dart.h
++++ b/include/configs/mx6ul_var_dart.h
+@@ -70,7 +70,7 @@
+ #endif
+ 
+ #ifdef CONFIG_SYS_BOOT_NAND
+-#define CONFIG_MFG_NAND_PARTITION "mtdparts=gpmi-nand:64m(boot),16m(kernel),16m(dtb),-(rootfs) "
++#define CONFIG_MFG_NAND_PARTITION "mtdparts=gpmi-nand:2m(spl),2m(u-boot),2m(u-boot-env),-(ubi) "
+ #else
+ #define CONFIG_MFG_NAND_PARTITION ""
+ #endif
+@@ -96,11 +96,13 @@
+ #define NAND_BOOT_ENV_SETTINGS \
+ 	"fdt_file=imx6ul-var-dart-nand_wifi.dtb\0" \
+ 	"nandargs=setenv bootargs console=${console},${baudrate} " \
+-		"ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs rw ${cma_size}\0" \
++		"\0" \
++	"ubiload=ubi part ubi && ubifsmount ubi0:boot && " \
++		"ubifsload ${loadaddr} ${image} && " \
++		"ubifsload ${fdt_addr} ${fdt_file}\0" \
+ 	"nandboot=echo Booting from nand ...; " \
+ 		"run nandargs; " \
+-		"nand read ${loadaddr} 0x600000 0x7e0000; " \
+-		"nand read ${fdt_addr} 0xde0000 0x20000; " \
++		"run ubiload; " \
+ 		"bootz ${loadaddr} - ${fdt_addr}\0" \
+ 	"mtdids=" MTDIDS_DEFAULT "\0" \
+ 	"mtdparts=" MTDPARTS_DEFAULT "\0"
+@@ -302,16 +304,14 @@
+  *     mtd0: 2M       (spl) First boot loader
+  *     mtd1: 2M       (u-boot)
+  *     mtd2: 2M       (u-boot env.)
+- *     mtd3: 8M       (kernel, dtb)
+- *     mtd4: left     (rootfs)
++ *     mtd3: left     (ubi)
+  */
+ /* Default mtd partition table */
+ #define MTDPARTS_DEFAULT        "mtdparts=nandflash-0:"\
+                                         "2m(spl),"\
+                                         "2m(u-boot),"\
+                                         "2m(u-boot-env),"\
+-                                        "8m(kernel),"\
+-                                        "-(rootfs)"     /* ubifs */
++                                        "-(ubi)"
+ 
+ /* NAND stuff */
+ #define CONFIG_NAND_MXS
