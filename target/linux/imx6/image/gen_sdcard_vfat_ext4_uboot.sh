@@ -8,7 +8,7 @@
 
 set -x
 [ $# -eq 7 ] || {
-    echo "SYNTAX: $0 <file> <bootfs image> <rootfs image> <bootfs size> <rootfs size> <u-boot bin dir> <u-boot pkg name>"
+    echo "SYNTAX: $0 <file> <bootfs image> <rootfs image> <bootfs size> <rootfs size> <bin dir> <u-boot pkg name>"
     exit 1
 }
 
@@ -17,12 +17,11 @@ BOOTFS="$2"
 ROOTFS="$3"
 BOOTFS_SIZE="$4"
 ROOTFS_SIZE="$5"
-
-UBOOT_BIN_DIR="$6"
+BIN_DIR="$6"
 UBOOT_PKG_NAME="$7"
 
-UBOOT_SPL="$UBOOT_BIN_DIR/$UBOOT_PKG_NAME/SPL"
-UBOOT_IMG="$UBOOT_BIN_DIR/$UBOOT_PKG_NAME/u-boot.img"
+UBOOT_SPL="$BIN_DIR/$UBOOT_PKG_NAME/SPL"
+UBOOT_IMG="$BIN_DIR/$UBOOT_PKG_NAME/u-boot.img"
 
 if [ ! -f "$UBOOT_SPL" ] || [ ! -f "$UBOOT_IMG" ]; then
 	echo "

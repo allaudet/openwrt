@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013 OpenWrt.org
+# Copyright (C) 2013-2018 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -16,13 +16,12 @@ FAT32_BLOCKS=$(shell echo $$(($(CONFIG_TARGET_BOOTFS_PARTSIZE)*1024*1024/$(FAT32
 
 DEVICE_VARS += MKUBIFS_OPTS
 
-# $(1): Kernel image that will be included
 define Build/boot-overlay
 	rm -rf $@.boot
 	mkdir -p $@.boot
 
 	$(CP) $@ $@.boot/$(IMG_PREFIX)$(KERNEL_SUFFIX)
-	ln -sf $(IMG_PREFIX)$(KERNEL_SUFFIX) $@.boot/$(if $(1),$(1),uImage)
+	ln -sf $(IMG_PREFIX)$(KERNEL_SUFFIX) $@.boot/$(subst -,,$(KERNEL_SUFFIX))
 
 	$(foreach dts,$(DEVICE_DTS), \
 		$(CP) \
@@ -32,6 +31,8 @@ define Build/boot-overlay
 			$(IMG_PREFIX)-$(dts).dtb \
 			$@.boot/$(dts).dtb; \
 	)
+
+	test ! -f ./bootscript-$(DEVICE_NAME) || \
 	mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
 		-n '$(DEVICE_ID) OpenWrt bootscript' \
 		-d ./bootscript-$(DEVICE_NAME) \
@@ -57,25 +58,15 @@ endef
 
 # $(1): U-BOOT package that will be burned on the sdcard
 define Build/sdcard.img
-	$(INSTALL_DIR) $(BIN_DIR)/sdcard
-
-	# boot.img
 	rm -rf $@.boot.img
 	mkfs.fat $@.boot.img -C $(FAT32_BLOCKS)
 
-	mcopy -i $@.boot.img $(KDIR)/zImage ::zImage
-	$(foreach dts,$(shell echo $(DEVICE_DTS)), \
-		mcopy -i $@.boot.img $(KDIR)/image-$(dts).dtb ::$(dts).dtb; \
-		$(CP) \
-			$(KDIR)/image-$(dts).dtb \
-			$(BIN_DIR)/sdcard/$(dts).dtb; \
-	)
-	$(CP) $@.boot.img $(BIN_DIR)/sdcard
+	rm -rf $@.boot
+	mkdir -p $@.boot
 
-	# rootfs.img
-	$(CP) $(word 2,$^) $(BIN_DIR)/sdcard
+	$(TAR) -C $@.boot -xf $(IMAGE_KERNEL).boot.tar
+	$(foreach file,$(wildcard $@.boot/*), mcopy -i $@.boot.img $(file) ::;)
 
-	# sdcard.img
 	./gen_sdcard_vfat_ext4_uboot.sh \
 		$@ \
 		$@.boot.img \

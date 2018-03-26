@@ -25,11 +25,10 @@ define Device/var-6ulcustomboard
 	kmod-leds-gpio kmod-pps-gpio \
 	kobs-ng nand-utils \
 	u-boot-mx6ul_var_dart_mmc u-boot-mx6ul_var_dart_nand
-  KERNEL += | boot-overlay zImage
-  IMAGES := nand.ubi bootfs.tar.gz sdcard.img
+  KERNEL += | boot-overlay
+  IMAGES := nand.ubi sdcard.img
   UBINIZE_PARTS = boot=$$(KDIR_KERNEL_IMAGE).boot.ubifs=15
   IMAGE/nand.ubi := append-ubi
-  IMAGE/bootfs.tar.gz := bootfs.tar.gz
   IMAGE/sdcard.img := sdcard.img u-boot-mx6ul_var_dart_mmc
   IMAGE_NAME = $$(IMAGE_PREFIX)-$$(1)-$$(2)
   PAGESIZE := 2048
