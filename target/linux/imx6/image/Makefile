@@ -61,9 +61,7 @@ define Build/sdcard.img
 	mkdir -p $@.boot
 
 	$(TAR) -C $@.boot -xf $(IMAGE_KERNEL).boot.tar
-	$(foreach file,$(wildcard $@.boot/*), \
-		mcopy -i $@.boot.img $(file) ::; \
-	)
+	$(foreach file,$(wildcard $@.boot/*),mcopy -i $@.boot.img $(file) ::;)
 
 	./gen_sdcard_vfat_ext4_uboot.sh \
 		$@ \
