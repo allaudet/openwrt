@@ -23,6 +23,7 @@ define Device/var-6ulcustomboard
 	kmod-can kmod-can-flexcan kmod-can-raw \
 	kmod-hwmon-gsc \
 	kmod-leds-gpio kmod-pps-gpio \
+	kmod-brcmfmac \
 	kobs-ng nand-utils \
 	u-boot-mx6ul_var_dart_mmc u-boot-mx6ul_var_dart_nand
   KERNEL += | boot-overlay

@@ -20,15 +20,11 @@ define Build/boot-overlay
 	rm -rf $@.boot
 	mkdir -p $@.boot
 
-	$(CP) $@ $@.boot/$(IMG_PREFIX)$(KERNEL_SUFFIX)
-	ln -sf $(IMG_PREFIX)$(KERNEL_SUFFIX) $@.boot/$(subst -,,$(KERNEL_SUFFIX))
+	$(CP) $@ $@.boot/$(subst -,,$(KERNEL_SUFFIX))
 
 	$(foreach dts,$(DEVICE_DTS), \
 		$(CP) \
 			$(KDIR)/image-$(dts).dtb \
-			$@.boot/$(IMG_PREFIX)-$(dts).dtb; \
-		ln -sf \
-			$(IMG_PREFIX)-$(dts).dtb \
 			$@.boot/$(dts).dtb; \
 	)
 
@@ -65,7 +61,9 @@ define Build/sdcard.img
 	mkdir -p $@.boot
 
 	$(TAR) -C $@.boot -xf $(IMAGE_KERNEL).boot.tar
-	$(foreach file,$(wildcard $@.boot/*), mcopy -i $@.boot.img $(file) ::;)
+	$(foreach file,$(wildcard $@.boot/*), \
+		mcopy -i $@.boot.img $(file) ::; \
+	)
 
 	./gen_sdcard_vfat_ext4_uboot.sh \
 		$@ \
