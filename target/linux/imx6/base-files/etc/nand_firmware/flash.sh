@@ -11,7 +11,7 @@
 ROOT_PATH="/etc/nand_firmware"
 
 UBOOT_SPL="${ROOT_PATH}/SPL"
-UBOOT_IMG="${ROOT_PATH}/uboot.img"
+UBOOT_IMG="${ROOT_PATH}/u-boot.img"
 UBI_IMG="${ROOT_PATH}/openwrt.ubi"
 
 UBI_PAGESIZE="2048"
