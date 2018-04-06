@@ -26,7 +26,7 @@ UBI_IMG="openwrt-imx6-cortexa7-var-6ulcustomboard-squashfs-nand.ubi"
 
 PHY_DEV="sdc"
 
-IMG_NAME="openwrt-ext4-sdcard-v3.2.img"
+IMG_NAME="openwrt-ext4-sdcard-v5.1.img"
 
 #------------------------------------------------------------------------------#
 # Functions
