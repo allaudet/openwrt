@@ -71,7 +71,7 @@ echo "Extracting the image..."
 gunzip_sdcard_img
 echo "Preparing the image..."
 prepare_sdcard
-echo "Burning..."
+echo "Burning the image..."
 burn_sdcard
 
 exit 0
