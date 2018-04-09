@@ -34,7 +34,7 @@ IMG_NAME="openwrt-ext4-sdcard-v5.1.img"
 
 gunzip_sdcard_img() {
 	if [ -f "${BIN_DIR}/${SDCARD_IMG}.gz" ]; then
-		rm -rf "${BIN_DIR}/${SDCARD_IMG}"
+		rm -rf "${BIN_DIR:?}/${SDCARD_IMG}"
 		gunzip "${BIN_DIR}/${SDCARD_IMG}.gz"
 		mv "${BIN_DIR}/${SDCARD_IMG}" "${BIN_DIR}/${IMG_NAME}"
 	fi
