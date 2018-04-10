@@ -26,7 +26,7 @@ UBI_IMG="openwrt-imx6-cortexa7-var-6ulcustomboard-squashfs-nand.ubi"
 
 PHY_DEV="sdc"
 
-IMG_NAME="openwrt-ext4-sdcard-v5.1.img"
+IMG_NAME="openwrt-ext4-sdcard-v4.4.img"
 
 #------------------------------------------------------------------------------#
 # Functions
@@ -49,6 +49,8 @@ prepare_sdcard() {
 	for file in ${BIN_DIR}/u-boot-mx6ul_var_dart_nand/*; do
 		sudo cp "$file" /mnt/etc/nand_firmware
 	done
+
+	sudo sed -i "s/option enabled '1'/option enabled '0'/" /mnt/etc/config/autossh
 
 	sync
 	sudo umount /mnt
