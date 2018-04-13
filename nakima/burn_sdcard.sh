@@ -26,7 +26,7 @@ UBI_IMG="openwrt-imx6-cortexa7-var-6ulcustomboard-squashfs-nand.ubi"
 
 PHY_DEV="sdc"
 
-IMG_NAME="openwrt-ext4-sdcard-v4.4.img"
+IMG_NAME="openwrt-ext4-sdcard-v5.1.img"
 
 #------------------------------------------------------------------------------#
 # Functions
@@ -50,7 +50,8 @@ prepare_sdcard() {
 		sudo cp "$file" /mnt/etc/nand_firmware
 	done
 
-	sudo sed -i "s/option enabled '1'/option enabled '0'/" /mnt/etc/config/autossh
+	#sudo sed -i "s/option enabled '1'/option enabled '0'/" \
+	#	/mnt/etc/config/autossh
 
 	sync
 	sudo umount /mnt
