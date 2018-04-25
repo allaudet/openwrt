@@ -1,11 +1,14 @@
 #
-# Copyright (C) 2013 OpenWrt.org
+# Copyright (C) 2013-2018 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/image.mk
+
+FAT32_BLOCK_SIZE=1024
+FAT32_BLOCKS=$(shell echo $$(($(CONFIG_TARGET_BOOTFS_PARTSIZE)*1024*1024/$(FAT32_BLOCK_SIZE))))
 
 #################################################
 # Images
@@ -17,17 +20,15 @@ define Build/boot-overlay
 	rm -rf $@.boot
 	mkdir -p $@.boot
 
-	$(CP) $@ $@.boot/$(IMG_PREFIX)-uImage
-	ln -sf $(IMG_PREFIX)-uImage $@.boot/uImage
+	$(CP) $@ $@.boot/$(subst -,,$(KERNEL_SUFFIX))
 
 	$(foreach dts,$(DEVICE_DTS), \
 		$(CP) \
-			$(DTS_DIR)/$(dts).dtb \
-			$@.boot/$(IMG_PREFIX)-$(dts).dtb; \
-		ln -sf \
-			$(IMG_PREFIX)-$(dts).dtb \
+			$(KDIR)/image-$(dts).dtb \
 			$@.boot/$(dts).dtb; \
 	)
+
+	test ! -f ./bootscript-$(DEVICE_NAME) || \
 	mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
 		-n '$(DEVICE_ID) OpenWrt bootscript' \
 		-d ./bootscript-$(DEVICE_NAME) \
@@ -51,6 +52,27 @@ define Build/bootfs.tar.gz
 		-czvf $@ .
 endef
 
+# $(1): U-BOOT package that will be burned on the sdcard
+define Build/sdcard.img
+	rm -rf $@.boot.img
+	mkfs.fat $@.boot.img -C $(FAT32_BLOCKS)
+
+	rm -rf $@.boot
+	mkdir -p $@.boot
+
+	$(TAR) -C $@.boot -xf $(IMAGE_KERNEL).boot.tar
+	$(foreach file,$(wildcard $@.boot/*),mcopy -i $@.boot.img $(file) ::;)
+
+	./gen_sdcard_vfat_ext4_uboot.sh \
+		$@ \
+		$@.boot.img \
+		$(word 2,$^) \
+		$(CONFIG_TARGET_BOOTFS_PARTSIZE) \
+		$(CONFIG_TARGET_ROOTFS_PARTSIZE) \
+		$(BIN_DIR) \
+		$(1)
+endef
+
 #################################################
 # Devices
 #################################################
@@ -69,58 +91,7 @@ define Device/Default
   IMAGES :=
 endef
 
-define Device/ventana
-  DEVICE_TITLE := Gateworks Ventana family (normal NAND flash)
-  DEVICE_DTS:= \
-	imx6dl-gw51xx \
-	imx6dl-gw52xx \
-	imx6dl-gw53xx \
-	imx6dl-gw54xx \
-	imx6dl-gw551x \
-	imx6dl-gw552x \
-	imx6dl-gw553x \
-	imx6dl-gw5904 \
-	imx6q-gw51xx \
-	imx6q-gw52xx \
-	imx6q-gw53xx \
-	imx6q-gw54xx \
-	imx6q-gw5400-a \
-	imx6q-gw551x \
-	imx6q-gw552x \
-	imx6q-gw553x \
-	imx6q-gw5904
-  DEVICE_PACKAGES := kmod-sky2 kmod-sound-core kmod-sound-soc-imx kmod-sound-soc-imx-sgtl5000 \
-	kmod-can kmod-can-flexcan kmod-can-raw \
-	kmod-hwmon-gsc \
-	kmod-leds-gpio kmod-pps-gpio \
-	kobs-ng
-  KERNEL += | boot-overlay
-  IMAGES := nand.ubi bootfs.tar.gz
-  UBINIZE_PARTS = boot=$$(KDIR_KERNEL_IMAGE).boot.ubifs=15
-  IMAGE/nand.ubi := append-ubi
-  IMAGE/bootfs.tar.gz := bootfs.tar.gz | install-dtb
-  IMAGE_NAME = $$(IMAGE_PREFIX)-$$(1)-$$(2)
-  PAGESIZE := 2048
-  BLOCKSIZE := 128k
-  MKUBIFS_OPTS := -m $$(PAGESIZE) -e 124KiB
-endef
-TARGET_DEVICES += ventana
-
-define Device/ventana-large
-  $(Device/ventana)
-  DEVICE_NAME := ventana
-  DEVICE_TITLE := Gateworks Ventana family (large NAND flash)
-  IMAGES := nand.ubi
-  PAGESIZE := 4096
-  BLOCKSIZE := 256k
-  MKUBIFS_OPTS := -m $$(PAGESIZE) -e 248KiB
-endef
-TARGET_DEVICES += ventana-large
-
-define Device/wandboard
-  DEVICE_TITLE := Wandboard Dual
-  DEVICE_DTS := imx6dl-wandboard
-endef
-TARGET_DEVICES += wandboard
+include cortex-a7.mk
+include cortex-a9.mk
 
 $(eval $(call BuildImage))
