@@ -23,7 +23,12 @@ define Device/var-6ulcustomboard
 	kmod-can kmod-can-flexcan kmod-can-raw \
 	kmod-hwmon-gsc \
 	kmod-leds-gpio kmod-pps-gpio \
+	kmod-brcmfmac \
+		brcmfmac-firmware-4329-sdio \
+		brcmfmac-firmware-43362-sdio \
+		brcmfmac-firmware-43430-sdio \
 	kobs-ng nand-utils \
+	ip-full \
 	u-boot-mx6ul_var_dart_mmc u-boot-mx6ul_var_dart_nand
   KERNEL += | boot-overlay
   IMAGES := nand.ubi sdcard.img
