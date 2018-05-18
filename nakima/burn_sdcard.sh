@@ -26,7 +26,9 @@ UBI_IMG="openwrt-imx6-cortexa7-var-6ulcustomboard-squashfs-nand.ubi"
 
 PHY_DEV="sdc"
 
-IMG_NAME="openwrt-ext4-sdcard-v6.1.img"
+IMG_NAME="openwrt-ext4-sdcard-v9.1.img"
+
+BURN_SDCARD=0
 
 #------------------------------------------------------------------------------#
 # Functions
@@ -67,14 +69,46 @@ burn_sdcard() {
 }
 
 #------------------------------------------------------------------------------#
+# Options
+#------------------------------------------------------------------------------#
+
+USAGE="Usage: $0 [OPTION]...
+Prepares the sdcard image with all required u-boot raw files.
+
+Options:
+  -b                          also burns the sdcard
+  -h                          display this help and exit
+"
+
+while getopts ":bh:" opt; do
+    case "${opt}" in
+        b)
+            BURN_SDCARD=1
+            ;;
+        h)
+            echo "${USAGE}" 1>&2
+            exit 0
+            ;;
+        *)
+            echo "${USAGE}" 1>&2
+            exit 1
+            ;;
+    esac
+done
+
+#------------------------------------------------------------------------------#
 # Core
 #------------------------------------------------------------------------------#
 
 echo "Extracting the image..."
 gunzip_sdcard_img
+
 echo "Preparing the image..."
 prepare_sdcard
-echo "Burning the image..."
-burn_sdcard
+
+if [ "${BURN_SDCARD}" -eq 1 ]; then
+    echo "Burning the image..."
+    burn_sdcard
+fi
 
 exit 0
