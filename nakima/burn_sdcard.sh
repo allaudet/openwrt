@@ -26,7 +26,7 @@ UBI_IMG="openwrt-imx6-cortexa7-var-6ulcustomboard-squashfs-nand.ubi"
 
 PHY_DEV="sdc"
 
-IMG_NAME="openwrt-ext4-sdcard-v2.9.2.img"
+IMG_NAME="openwrt-ext4-sdcard-v2.9.3.img"
 
 BURN_SDCARD=0
 
@@ -54,6 +54,9 @@ prepare_sdcard() {
 
 	sudo sed -i "s/option enabled '1'/option enabled '0'/" \
 		/mnt/etc/config/autossh
+
+	sudo cp "$ROOT_DIR/nakima/custom-sd-files/wireless" \
+		/mnt/etc/config/wireless
 
 	sync
 	sudo umount /mnt

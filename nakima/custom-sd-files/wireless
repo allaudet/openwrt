@@ -1,0 +1,17 @@
+
+#### LAN AP configuration
+config wifi-device  'radio0'
+    option type     'mac80211'
+    option channel  '11'
+    option hwmode   '11g'
+    option path     'soc0/soc/2100000.aips-bus/2184000.usb/ci_hdrc.0/usb1/1-1/1-1:1.0'
+    option htmode   'HT20'
+    option disable  '0'
+
+config wifi-iface
+    option device     'radio0'
+    option network    'lan'
+    option mode       'ap'
+    option ssid       'EGO-MOD1-x1'
+    option encryption 'none'
+    option disable    '0'
