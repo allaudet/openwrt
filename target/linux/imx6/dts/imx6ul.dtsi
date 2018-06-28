@@ -934,7 +934,7 @@
 				fsl,magic-packet;
 				fsl,wakeup_irq = <0>;
 				status = "disabled";
-                        };
+			};
 
 			sim1: sim@0218c000 {
 				compatible = "fsl,imx6ul-sim";

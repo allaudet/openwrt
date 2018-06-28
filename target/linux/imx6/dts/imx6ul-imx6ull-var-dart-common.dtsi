@@ -130,7 +130,7 @@
 	phy-reset-duration=<100>;
 	phy-reset-on-resume;
 	phy-handle = <&ethphy0>;
-	status = "okay";
+	status = "disabled";
 };
 
 &fec2 {
@@ -141,7 +141,7 @@
 	phy-reset-gpios=<&gpio1 10 1>;
 	phy-reset-duration=<100>;
 	phy-reset-on-resume;
-	status = "okay";
+	status = "disabled";
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
